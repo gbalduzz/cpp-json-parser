@@ -34,6 +34,8 @@ void JSONGroup::write(std::ostream& stream, int ident) const {
 
     if (it != last) {
       stream << ",\n";
+      if (dynamic_cast<JSONGroup*>(it->second.get()))
+        stream << "\n";
     }
   }
 
