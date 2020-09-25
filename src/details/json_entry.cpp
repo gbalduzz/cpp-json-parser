@@ -27,6 +27,7 @@ bool JSONEntry::read(std::istream& inp) {
         case '}':
           if (parentheses != 0)
             throw(std::logic_error("Imbalanced parenthesis"));
+          inp.seekg(-1, inp.cur); // brace is part of parent group.
           return true;
 
         case '\"':

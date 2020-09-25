@@ -39,6 +39,8 @@ TEST(ReadTest, All) {
   EXPECT_EQ(vs, vs_check);
   reader.close_group();
 
+  reader.close_group();
+
   reader.open_group("group 2");
   reader.close_group();
 

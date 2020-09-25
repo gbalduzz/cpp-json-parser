@@ -46,18 +46,21 @@ void JSONGroup::write(std::ostream& stream, int ident) const {
 }
 
 bool JSONGroup::read(std::istream& inp) {
-  std::string name, tmp;
-
-  inp >> tmp;
-  if (tmp == "{}")
-    return true;
-  else if (tmp == "{},")
-    return false;
-  else if (tmp != "{")
+  std::string name;
+  char c;
+  trimSpaces(inp);
+  inp.read(&c, 1);
+  if (c != '{')
     throw(std::logic_error("Invalid group format."));
+  trimSpaces(inp);
 
   bool is_last = false;
-  do {
+
+  if (inp.peek() == '}') {  // empty group
+    is_last = true;
+  }
+
+  while (!is_last) {
     name = readQuotedString(inp);
     skipUntil(inp, ':');
     trimSpaces(inp);
@@ -70,13 +73,19 @@ bool JSONGroup::read(std::istream& inp) {
       objects_[name] = std::make_unique<JSONEntry>();
       is_last = objects_[name]->read(inp);
     }
-  } while (!is_last);
+  }
 
-  inp >> tmp;
-  if (tmp.back() == ',')
+  skipUntil(inp, '}');
+  trimSpaces(inp);
+
+  c = inp.peek();
+  if (c == ',') {
+    inp.read(&c, 1);
     return false;
-  else
+  }
+  else {
     return true;
+  }
 }
 
 }  // namespace json::details
