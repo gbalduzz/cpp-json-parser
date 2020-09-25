@@ -4,7 +4,7 @@
 
 #include <complex>
 
-TEST(ReadTest, All) {
+TEST(ReadTest, ValidInput) {
   json::JSONReader reader;
   reader.open_file(TEST_DIR "read_test_input.json");
 
@@ -66,4 +66,23 @@ TEST(ReadTest, All) {
   const std::vector<std::complex<double>> vc_check{std::complex<double>(1, -1),
                                                    std::complex<double>(2, 3)};
   EXPECT_EQ(vc, vc_check);
+}
+
+TEST(ReadTest, InvalidInput) {
+  auto test_file = [](const std::string& name, int err_line) {
+    json::JSONReader reader;
+    try {
+      reader.open_file(name);
+      EXPECT_TRUE(false);
+    }
+    catch (const std::logic_error& err) {
+      const std::string msg = err.what();
+      const std::string check = "Line " + std::to_string(err_line) + ":";
+      EXPECT_NE(std::string::npos, msg.find(check));
+    }
+  };
+
+  test_file(TEST_DIR "invalid_input1.json", 8);
+  test_file(TEST_DIR "invalid_input2.json", 11);
+  test_file(TEST_DIR "invalid_input3.json", 6);
 }

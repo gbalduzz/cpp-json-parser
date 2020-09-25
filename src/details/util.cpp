@@ -6,27 +6,81 @@
 namespace json::details {
 
 std::string readQuotedString(std::istream& inp) {
-  skipUntil(inp, '\"');
+  trimUntil(inp, '\"');
+  const auto pos = inp.tellg();
+
   std::string result;
   std::getline(inp, result, '\"');
+
+  if (inp.eof()) {
+    throw(std::logic_error("Line " + findLine(inp, pos) + ": missing matching \""));
+  }
+
   return result;
 }
 
 void skipUntil(std::istream& inp, char target) {
   char c;
+  const auto pos = inp.tellg();
+
   while (inp.read(&c, 1)) {
     if (c == target)
       return;
   }
 
-  throw(std::logic_error("Parsing ended while looking for " + target));
+  throw(std::logic_error("Line " + findLine(inp, pos) + ": parsing ended while looking for \'" +
+                         target + "\'"));
+}
+
+void trimUntil(std::istream& inp, char target) {
+  trimSpaces(inp);
+  const auto pos = inp.tellg();
+  char c;
+  inp.read(&c, 1);
+
+  if (c == target) {
+    return;
+  }
+  else {
+    throw(std::logic_error("Line " + findLine(inp, pos) + ": expected next character \'" + target +
+                           "\'"));
+  }
 }
 
 void trimSpaces(std::istream& inp) {
   char c;
-  while (inp.peek() == ' ' || inp.peek() == '\n') {
+  while (true) {
+    switch (inp.peek()) {
+      case ' ':
+      case '\n':
+      case '\t':
+        break;
+      default:
+        return;
+    }
+
     inp.read(&c, 1);
   }
+}
+
+std::string findLine(std::istream& inp) {
+  return findLine(inp, inp.tellg());
+}
+
+std::string findLine(std::istream& inp, const std::streampos& pos) {
+  const auto original_pos = inp.tellg();
+  inp.seekg(0, inp.beg);
+
+  int line = 0;
+  std::string tmp;
+
+  while (inp.tellg() < pos) {
+    ++line;
+    std::getline(inp, tmp);
+  }
+
+  inp.seekg(original_pos);
+  return std::to_string(line);
 }
 
 }  // namespace json::details

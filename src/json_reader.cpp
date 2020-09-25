@@ -19,7 +19,12 @@ void JSONReader::open_file(const std::string& filename) {
   stream << inp.rdbuf();
   inp.close();
 
-  root_.read(stream);
+  try {
+    root_.read(stream);
+  }
+  catch (const std::logic_error& err) {
+    throw(std::logic_error("File " + filename + ":\n" + err.what()));
+  }
 }
 
 void JSONReader::close_file() {

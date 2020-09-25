@@ -51,7 +51,7 @@ bool JSONGroup::read(std::istream& inp) {
   trimSpaces(inp);
   inp.read(&c, 1);
   if (c != '{')
-    throw(std::logic_error("Invalid group format."));
+    throw(std::logic_error("Line " + findLine(inp) + ": invalid group format."));
   trimSpaces(inp);
 
   bool is_last = false;
@@ -62,7 +62,7 @@ bool JSONGroup::read(std::istream& inp) {
 
   while (!is_last) {
     name = readQuotedString(inp);
-    skipUntil(inp, ':');
+    trimUntil(inp, ':');
     trimSpaces(inp);
 
     if (inp.peek() == '{') {  // is group
