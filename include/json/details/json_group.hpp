@@ -1,8 +1,8 @@
 #pragma once
 
-#include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "json_entry.hpp"
@@ -20,7 +20,10 @@ public:
 
   template <class T>
   void addEntry(const std::string& name, const T& val) {
-    objects_[name] = std::make_unique<JSONEntry>(val);
+    auto [it, inserted] = objects_.insert({name, std::make_unique<JSONEntry>(val)});
+    if (inserted) {
+      order_.push_back(it);
+    }
   }
 
   template <class T>
@@ -44,7 +47,9 @@ public:
   }
 
 private:
-  std::map<std::string, std::unique_ptr<JSONObject>> objects_;
+  using Container = std::unordered_map<std::string, std::unique_ptr<JSONObject>>;
+  Container objects_;
+  std::vector<Container::const_iterator> order_;
 };
 
 }  // namespace json::details

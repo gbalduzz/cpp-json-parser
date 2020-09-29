@@ -5,7 +5,8 @@ namespace json::details {
 
 JSONGroup* JSONGroup::addGroup(const std::string& name) {
   if (objects_.find(name) == objects_.end()) {
-    objects_[name] = std::make_unique<JSONGroup>();
+    auto [it, _] = objects_.insert({name, std::make_unique<JSONGroup>()});
+    order_.push_back(it);
     return static_cast<JSONGroup*>(objects_[name].get());
   }
   else {
@@ -18,6 +19,7 @@ JSONGroup* JSONGroup::getGroup(const std::string& name) {
 }
 
 void JSONGroup::write(std::ostream& stream, int ident) const {
+  assert(order_.size() == objects_.size());
   if (objects_.size() == 0) {
     stream << "{}";
     return;
@@ -25,14 +27,15 @@ void JSONGroup::write(std::ostream& stream, int ident) const {
 
   stream << "{\n";
 
-  auto last = --objects_.end();
-  for (auto it = objects_.begin(); it != objects_.end(); ++it) {  // it -> [name, object]
-    for (int i = 0; i < ident; ++i)
+  for (int i = 0; i < order_.size(); ++i) {
+    auto it = order_[i];
+    for (int i = 0; i < ident; ++i) {
       stream << "  ";
+    }
     stream << "\"" + it->first + "\" : ";
     it->second->write(stream, ident + 1);
 
-    if (it != last) {
+    if (i != order_.size() - 1) {
       stream << ",\n";
       if (dynamic_cast<JSONGroup*>(it->second.get()))
         stream << "\n";
