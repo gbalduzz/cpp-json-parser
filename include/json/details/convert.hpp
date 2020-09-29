@@ -72,7 +72,9 @@ std::istream& operator>>(std::istream& stream, std::vector<T>& vec) {
     if (!quote) {
       switch (c) {
         case ']':
-          vec.push_back(convert<T>(value));
+          if (value != "") {
+            vec.push_back(convert<T>(value));
+          }
           return stream;
         case '(':
           ++parentheses;

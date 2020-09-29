@@ -15,7 +15,8 @@ TEST(ReadTest, All) {
   std::vector<std::complex<double>> vc{std::complex<double>(0, 0), std::complex<double>(1, -1)};
   std::vector<std::vector<std::string>> vvs{std::vector<std::string>{"AA", "AB"},
                                             std::vector<std::string>{"BA", "BB"}};
-  std::vector<std::vector<int>> vvi{std::vector<int>{0, 1, 2}, std::vector<int>{3, 4}};
+  std::vector<std::vector<int>> vvi{std::vector<int>{0, 1, 2}, std::vector<int>{},
+                                    std::vector<int>{3, 4}};
 
   auto read_or_write = [&](auto& file) {
     file.open_group("group 1");
