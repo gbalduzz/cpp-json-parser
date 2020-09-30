@@ -63,6 +63,20 @@ void trimSpaces(std::istream& inp) {
   }
 }
 
+std::string_view trimSpaces(std::string_view s) {
+  auto is_space = [](char c) { return c == ' ' || c == '\n' || c == '\t'; };
+
+  std::size_t start = 0;
+  while (start < s.size() && is_space(s[start]))
+    ++start;
+
+  std::size_t end = s.size();  // exclusive
+  while (end > 0 && is_space(s[end - 1]))
+    --end;
+
+  return s.substr(start, end - start);
+}
+
 std::string findLine(std::istream& inp) {
   return findLine(inp, inp.tellg());
 }

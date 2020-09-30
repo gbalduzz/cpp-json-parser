@@ -66,6 +66,13 @@ TEST(ReadTest, ValidInput) {
   const std::vector<std::complex<double>> vc_check{std::complex<double>(1, -1),
                                                    std::complex<double>(2, 3)};
   EXPECT_EQ(vc, vc_check);
+  // Complex can also be read as a pair.
+  std::vector<std::pair<double, double>> v_pair;
+  std::vector<std::pair<double, double>> v_pair_check;
+  for (auto& c : vc_check)
+    v_pair_check.push_back({c.real(), c.imag()});
+  reader.execute("vec cmplx", v_pair);
+  EXPECT_EQ(v_pair, v_pair_check);
 }
 
 TEST(ReadTest, InvalidInput) {

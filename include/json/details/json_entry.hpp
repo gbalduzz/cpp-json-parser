@@ -36,7 +36,7 @@ public:
 
   template <class T>
   void write(T& obj) const {
-    obj = convert<T>(data_);
+    Convert<T>::execute(data_, obj);
   }
 
   // Return true if this is the last element of a group.
