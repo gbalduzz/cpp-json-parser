@@ -43,6 +43,7 @@ void JSONWriter::flush() {
   file_.seekp(0);
   root_.write(file_, 1);
   file_ << "\n";
+  file_.flush();
 }
 
 }  // namespace json
